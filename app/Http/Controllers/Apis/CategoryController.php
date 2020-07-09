@@ -30,14 +30,10 @@ class CategoryController extends Controller
 
     public function list()
     {
-        // $category = Category::with('products')->get();
-        // $response['category'] = $category;
-        // $response['products'] = $category->products;
+        $category = Category::with('products')->get();
+        $response['category'] = $category;
+        $response['products'] = $category->products;
 
-        $category = new Category;
-        $list = $category->listAll();
-
-        // return $list;
         return response()->json($response, 200);
     }
 

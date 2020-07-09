@@ -11,11 +11,6 @@ class ProductController extends Controller
 {
     public function index()
     {
-        // $products = Product::has('categories')->paginate(5);
-        // foreach($products as $ind => $products_collection){
-        //     $products->categories = $products_collection->categories;
-        // }
-
         $products = Product::select(
             'products.*',
             'categories.name as category_name'
