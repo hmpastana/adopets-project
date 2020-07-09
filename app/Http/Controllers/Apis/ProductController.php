@@ -11,17 +11,23 @@ class ProductController extends Controller
 {
     public function index()
     {
-        // $products = Product::has('categories')->paginate(5);
-        // foreach($products as $ind => $products_collection){
-        //     $products->categories = $products_collection->categories;
-        // }
-
         $products = Product::select(
             'products.*',
             'categories.name as category_name'
             )
-        ->join('categories', 'category_id', '=', 'categories.id')
-        ->get();
+        ->join('categories', 'category_id', '=', 'categories.id');
+
+        if (!is_null($request->name)) {
+            $products = $products->whereIn('name', $request->name);
+        }
+        if (!is_null($request->description)) {
+            $products = $products->whereIn('description', $request->description);
+        }
+        if (!is_null($request->category)) {
+            $products = $products->whereIn('category', $request->category);
+        }
+
+        $products = $products->get();
 
         return response()->json($products, 200);
     }
