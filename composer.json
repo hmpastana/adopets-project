@@ -16,7 +16,7 @@
         "laravel/passport": "^9.3",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^2.1",
-        "tymon/jwt-auth": "dev-develop",
+        "tymon/jwt-auth": "1.0.0",
         "webpatser/laravel-uuid": "^3.0"
     },
     "require-dev": {

@@ -18,11 +18,19 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['middleware' => ['jwt.verify']], function() {
+Route::group([
 
-    Route::get('user', 'Apis\UserController@getAuthenticatedUser');
-    Route::get('closed', 'Apis\CategoryController@closed');
+    'middleware' => 'api',
+    'prefix' => 'auth'
 
+], function() {
+
+    Route::post('login', 'AuthController@login');
+    Route::post('logout', 'AuthController@logout');
+});
+
+Route::group(['middleware' => 'apiJwt'], function(){
+    Route::post('logout', 'AuthController@logout');
 });
 
 Route::group(['prefix' => 'users'], function(){
