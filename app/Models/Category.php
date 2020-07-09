@@ -4,45 +4,42 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Webpatser\Uuid\Uuid;
 
 class Category extends Model
 {
-    public function insert($request)
+    public static function boot()
     {
-        foreach($request['categories'] as $name_ind => $name_array){
-            $insert = new $this;
-            $insert->id = Str::uuid();
-            $insert->name = $name_array['name'];
-            $insert->save();
-        }
-
-        return $insert;
+        parent::boot();
+        self::creating(function ($model) {
+            $model->id = (string) Uuid::generate(4);
+        });
     }
 
-    public function list()
-    {
-        $list = self::select()->orderBy('name')->get();
+    protected $keyType = 'string';
 
-        return $list;
+    protected $fillable = [
+        'name'
+    ];
+
+    protected $hidden = [
+        'products',
+    ];
+
+    public function products()
+    {
+        return $this->hasMany('App\Models\Product');
     }
 
-    public function edit($request)
+    public function listAll()
     {
-        foreach($request['categories'] as $category_ind => $category_array){
-            $edit = self::where('id', '=', $category_array['uuid'])
-            ->update([
-                'name' => $category_array['name']
-            ]);
-        }
-        return $edit;
+        // return $this->hasMany('App\Models\Product');
+        $category = Category::select()
+            ->join('products', 'category.id', 'category_id')
+            ->get();
+
+        return $category;
+        // return $this->hasMany('App\Models\Product');
     }
 
-    public function deleteCategory($request)
-    {
-        foreach($request['categories'] as $category_ind => $category_array){
-            $delete = self::where('id', $category_array['uuid'])
-                ->delete();
-        }
-        return $delete;
-    }
 }

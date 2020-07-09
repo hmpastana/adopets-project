@@ -2,22 +2,39 @@
 
 namespace App;
 
+use Laravel\Passport\HasApiTokens;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use Webpatser\Uuid\Uuid;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+    * The attributes that are mass assignable.
+    *
+    * @var array
+    */
+
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->id = (string) Uuid::generate(4);
+        });
+    }
+    //
+    // public function setPasswordAttribute($password)
+    // {
+    //     $this->attributes['password'] = Hash::make($password);
+    // }
+
     protected $fillable = [
         'name', 'email', 'password',
     ];
@@ -31,53 +48,15 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
-    public function insert($request)
+    public function getJWTIdentifier()
     {
-
-        $insert = new $this;
-        $insert->id = Str::uuid();
-        $insert->name = $request->name;
-        $insert->email = $request->email;
-        $insert->email_verified_at = date('Y-m-d H:s:i');
-        $insert->password = Hash::make($request->password);
-        $insert->save();
-
-        return true;
+        return $this->getKey();
+    }
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 
-    public function list($request)
-    {
-        $list = self::select()->where('id', $request->uuid)->first();
 
-        return $list;
-    }
 
-    public function edit($request)
-    {
-        $edit = self::where('id', '=', $request->uuid)
-        ->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        return $edit;
-    }
-
-    public function deleteUser($request)
-    {
-        $delete = self::where('id', $request->uuid)
-            ->delete();
-
-        return $delete;
-    }
 }

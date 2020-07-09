@@ -18,23 +18,47 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group(['middleware' => ['jwt.verify']], function() {
+
+    Route::get('user', 'Apis\UserController@getAuthenticatedUser');
+    Route::get('closed', 'Apis\CategoryController@closed');
+
+});
+
 Route::group(['prefix' => 'users'], function(){
-    Route::get('list', 'Apis\UserController@index')->name('list_users');
-    Route::post('store', 'Apis\UserController@store')->name('store_users');
-    Route::post('update', 'Apis\UserController@edit')->name('edit_users');
-    Route::post('delete', 'Apis\UserController@delete')->name('delete_users');
+    Route::post('register', 'Apis\UserController@register');
+    Route::post('login', 'Apis\UserController@authenticate');
+    Route::post('logout', 'Apis\UserController@logout');
+    Route::get('open', 'Apis\CategoryController@open');
+
+
+    // Route::get('show', 'Apis\UserController@index');
+    // Route::get('show/{user}', 'Apis\UserController@show');
+    Route::put('update/{user}', 'Apis\UserController@update');
+    Route::delete('delete/{user}', 'Apis\UserController@delete');
+    // Route::any('errors', 'Apis\UserController@errors');
 });
 
 Route::group(['prefix' => 'categories'], function(){
-    Route::get('list', 'Apis\CategoryController@index')->name('list_categories');
-    Route::post('store', 'Apis\CategoryController@store')->name('store_categories');
-    Route::post('update', 'Apis\CategoryController@edit')->name('edit_categories');
-    Route::post('delete', 'Apis\CategoryController@delete')->name('delete_categories');
+
+    Route::get('show', 'Apis\CategoryController@index');
+    Route::get('list', 'Apis\CategoryController@list');
+    Route::get('show/{category}', 'Apis\CategoryController@show');
+    Route::get('show/{category}/products', 'Apis\CategoryController@products');
+    Route::post('store', 'Apis\CategoryController@store');
+    Route::put('update/{category}', 'Apis\CategoryController@update');
+    Route::delete('delete/{category}', 'Apis\CategoryController@delete');
+    Route::any('errors', 'Apis\CategoryController@errors');
+
 });
 
 Route::group(['prefix' => 'products'], function(){
-    Route::get('list', 'Apis\ProductController@index')->name('list_products');
-    Route::post('store', 'Apis\ProductController@store')->name('store_products');
-    Route::post('update', 'Apis\ProductController@edit')->name('edit_products');
-    Route::post('delete', 'Apis\ProductController@delete')->name('delete_products');
+
+    Route::get('show', 'Apis\ProductController@index');
+    Route::get('show/{product}', 'Apis\ProductController@show');
+    Route::post('store', 'Apis\ProductController@store');
+    Route::put('update/{product}', 'Apis\ProductController@update');
+    Route::delete('delete/{product}', 'Apis\ProductController@delete');
+    Route::any('errors', 'Apis\ProductController@errors');
+
 });

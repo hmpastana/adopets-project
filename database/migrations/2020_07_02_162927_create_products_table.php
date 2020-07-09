@@ -19,7 +19,7 @@ class CreateProductsTable extends Migration
             $table->string('name');
             $table->string('description');
             $table->double('price');
-            $table->bigInteger('stock_quantity')->default(true);
+            $table->bigInteger('stock_quantity')->default(0);
             $table->uuid('category_id');
 
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');

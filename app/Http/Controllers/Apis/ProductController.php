@@ -4,39 +4,70 @@ namespace App\Http\Controllers\Apis;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Validator;
+use Webpatser\Uuid\Uuid;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        $product = new Product();
-        $list = $product->list();
+        // $products = Product::has('categories')->paginate(5);
+        // foreach($products as $ind => $products_collection){
+        //     $products->categories = $products_collection->categories;
+        // }
 
-        return $list;
+        $products = Product::select(
+            'products.*',
+            'categories.name as category_name'
+            )
+        ->join('categories', 'category_id', '=', 'categories.id')
+        ->get();
+
+        return response()->json($products, 200);
+    }
+
+    public function show($id)
+    {
+        $product = Product::find($id);
+        if(is_null($product)){
+            return response()->json(null,404);
+        }
+        return response()->json(Product::findOrFail($id), 200);
     }
 
     public function store(Request $request)
     {
-        $product = new Product();
-        $store = $product->insert($request);
+        $rules = [
+            'name' => 'required',
+            'description' => 'required',
+            'price' => 'required',
+            'category_id' => 'required',
+            'uuid' => (string) Uuid::generate(4)
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
 
-        return true;
+        $product = Product::create($request->all());
+        return response()->json($product, 201);
     }
 
-    public function edit(Request $request)
+    public function update(Request $request, Product $product)
     {
-        $product = new Product();
-        $edit = $product->edit($request);
-
-        return true;
+        $product->update($request->all());
+        return response()->json($product, 201);
     }
 
-    public function delete(Request $request)
+    public function delete(Request $request, Product $product)
     {
-        $product = new Product();
-        $delete = $product->deleteProduct($request);
+        $product->delete();
+        return response()->json(null, 204);
+    }
 
-        return true;
+    public function errors()
+    {
+        return response()->json(['msg' => 'Data is missing'], 501);
     }
 
 }
