@@ -10,31 +10,10 @@ use Validator;
 
 class CategoryController extends Controller
 {
-    public function open()
-    {
-        $data = "This data is open and can be accessed without the client being authenticated";
-        return response()->json(compact('data'),200);
-
-    }
-
-    public function closed()
-    {
-        $data = "Only authorized users can see this";
-        return response()->json(compact('data'),200);
-    }
 
     public function index(Request $request)
     {
         return response()->json(Category::paginate(5), 200);
-    }
-
-    public function list()
-    {
-        $category = Category::with('products')->get();
-        $response['category'] = $category;
-        $response['products'] = $category->products;
-
-        return response()->json($response, 200);
     }
 
     public function show($id)

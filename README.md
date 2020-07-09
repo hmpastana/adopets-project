@@ -1,9 +1,9 @@
 ## Instructions
 
 I created the system using the latest version of the Laravel Framework. I used migrations to create the tables and all tables have the primary key UUDI as requested for you.
-On this project, I used the PostgreSQL database and for testing the application I used Postman.
+On this project, I used the PostgreSQL database and for testing the application I used Insomnia.
 
-The endpoints are available in a separate file in public/files/endpoints.
+The endpoints are available in a separate file in public/endpoints.
 
 PS: Prepare the file .env before running the command below, in order to run the migration correctly.
 

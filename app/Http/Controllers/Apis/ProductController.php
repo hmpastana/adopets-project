@@ -9,25 +9,25 @@ use Webpatser\Uuid\Uuid;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $products = Product::select(
-            'products.*',
+            '*',
+            'products.name as name',
             'categories.name as category_name'
             )
         ->join('categories', 'category_id', '=', 'categories.id');
 
-        if (!is_null($request->name)) {
-            $products = $products->whereIn('name', $request->name);
+        if (isset($request->name) and !is_null($request->name)) {
+            $products = $products->where('products.name', $request->name);
         }
-        if (!is_null($request->description)) {
-            $products = $products->whereIn('description', $request->description);
+        if (isset($request->description) and !is_null($request->description)) {
+            $products = $products->where('description', $request->description);
         }
-        if (!is_null($request->category)) {
-            $products = $products->whereIn('category', $request->category);
+        if (isset($request->category_name) and !is_null($request->category_name)) {
+            $products = $products->where('categories.name', $request->category_name);
         }
-
-        $products = $products->get();
+        $products = $products->paginate(2);
 
         return response()->json($products, 200);
     }
