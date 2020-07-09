@@ -44,16 +44,6 @@ class CategoryController extends Controller
         $response['products'] = $category->products;
 
         return response()->json($response, 200);
-
-        //Third method using resource and hasmany nested
-            // $category = Category::with('products')->findOrFail($id);
-            // $response = new CategoryResource($category, 200);
-            // return response()->json($response, 200);
-        //First way without resource
-            // return response()->json(Category::findOrFail($id), 200);
-        //Second way (with resource)
-            // $response = new CategoryResource(Category::findOrFail($id), 200);
-            // return response()->json($response, 200);
     }
 
     public function store(Request $request)
